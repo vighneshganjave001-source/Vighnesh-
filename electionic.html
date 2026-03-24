@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Electronics Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body{
+            font-family:'Roboto',sans-serif;
+            background: linear-gradient(to right, #f0f2f5, #e0f7fa);
+            margin:0;
+        }
+        header{
+            background: linear-gradient(45deg, #ff6b6b, #f7d794);
+            color: white;
+            padding: 25px;
+            text-align:center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            font-size: 28px;
+            font-weight:bold;
+        }
+        .container{
+            display:flex;
+            justify-content:space-around;
+            flex-wrap:wrap;
+            padding:20px;
+        }
+        .categories,.products,.cart{
+            background:white;
+            padding:20px;
+            border-radius:15px;
+            width:30%;
+            margin-bottom:20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .categories:hover,.products:hover,.cart:hover{
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        h2,h3{text-align:center;color:#ff6b6b;}
+        button{
+            background: linear-gradient(45deg, #1dd1a1, #54a0ff);
+            color:white;
+            border:none;
+            padding:8px 14px;
+            border-radius:8px;
+            cursor:pointer;
+            transition: 0.3s;
+            font-weight:bold;
+        }
+        button:hover{
+            background: linear-gradient(45deg, #10ac84, #2e86de);
+        }
+        .remove-btn{
+            background: linear-gradient(45deg, #ee5253, #f368e0);
+        }
+        .remove-btn:hover{
+            background: linear-gradient(45deg, #c0392b, #9b59b6);
+        }
+        .product,.cart-item{
+            border-radius:12px;
+            padding:12px;
+            margin:12px 0;
+            text-align:center;
+            background: linear-gradient(145deg, #ffffff, #dff9fb);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .product:hover{
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .product img{width:120px;height:120px;object-fit:cover;border-radius:12px;margin-bottom:10px;}
+        form{margin-top:10px; display:flex; flex-direction:column; align-items:center;}
+        input,textarea{
+            width:90%;
+            padding:8px;
+            margin:6px 0;
+            border:1px solid #ccc;
+            border-radius:8px;
+            outline:none;
+            transition: 0.3s;
+        }
+        input:focus,textarea:focus{
+            border-color:#ff6b6b;
+            box-shadow: 0 0 6px rgba(255,107,107,0.4);
+        }
+        .company-section{
+            border-top:1px dashed #ff9ff3;
+            margin-top:10px;
+            padding-top:10px;
+        }
+        @media(max-width: 1100px){
+            .categories,.products,.cart{width:45%;}
+        }
+        @media(max-width: 800px){
+            .categories,.products,.cart{width:90%;}
+        }
+    </style>
+</head>
+<body>
+
+<header>Online Electronics Store</header>
+
+<div class="container">
+
+    <div class="categories">
+        <h2>Categories</h2>
+        <button onclick="showCategory('mobiles')">Mobiles</button><br><br>
+        <button onclick="showCategory('laptops')">Laptops</button><br><br>
+        <button onclick="showCategory('earphones')">Earphones</button>
+    </div>
+
+    <div class="products">
+        <h2>Products</h2>
+        <div id="productList">Select a category</div>
+    </div>
+
+    <div class="cart">
+        <h2>Cart</h2>
+        <div id="cartItems"></div>
+        <h3>Total: ?<span id="total">0</span></h3>
+
+        <h3>Delivery Details</h3>
+        <form id="deliveryForm" onsubmit="placeOrder(event)">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
+            <textarea id="address" placeholder="Delivery Address" rows="3" required></textarea>
+            <button type="submit">Place Order</button>
+        </form>
+        <div id="orderMessage" style="margin-top:10px;color:green;font-weight:bold;"></div>
+    </div>
+
+</div>
+
+<script>
+const products={
+    mobiles:[
+        {c:"Samsung",m:"Galaxy S21",p:50000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%285%29.jpg"},
+        {c:"Samsung",m:"Galaxy A52",p:25000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%286%29.jpg"},
+        {c:"Apple",m:"iPhone 13",p:70000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%287%29.jpg"},
+        {c:"Apple",m:"iPhone SE",p:30000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%288%29.jpg"},
+        {c:"Xiaomi",m:"Redmi Note 10",p:15000,i:"file:///C:/Users/acer/Desktop/pwbpage/images%20%286%29.jpg"},
+        {c:"Xiaomi",m:"Mi 11",p:35000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%289%29.jpg"}
+    ],
+    laptops:[
+        {c:"Dell",m:"Inspiron 15",p:45000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%2810%29.jpg"},
+        {c:"HP",m:"Pavilion 14",p:50000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%2811%29.jpg"},
+        {c:"Apple",m:"MacBook Air",p:90000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%2812%29.jpg"}
+    ],
+    earphones:[
+        {c:"Boat",m:"Airdopes 441",p:2000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%2813%29.jpg"},
+        {c:"Sony",m:"WH-1000XM4",p:25000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%2814%29.jpg"},
+        {c:"Apple",m:"AirPods Pro",p:25000,i:"file:///C:/Users/acer/Desktop/pwbpage/download%20%2815%29.jpg"}
+    ]
+};
+
+let total=0;
+
+function showCategory(cat){
+    const list=document.getElementById("productList"); list.innerHTML="";
+    const companies=[...new Set(products[cat].map(p=>p.c))];
+    companies.forEach(company=>{
+        const section=document.createElement("div"); section.className="company-section";
+        section.innerHTML=`<h3>${company}</h3>`;
+        products[cat].filter(p=>p.c===company).forEach(p=>{
+            let div=document.createElement("div"); div.className="product";
+            div.innerHTML=`<img src="${p.i}" alt="${p.m}"><p>${p.m}</p><p>?${p.p}</p>
+            <button onclick="addToCart('${p.c} ${p.m}',${p.p},'${p.i}')">Add to Cart</button>`;
+            section.appendChild(div);
+        });
+        list.appendChild(section);
+    });
+}
+
+function addToCart(name,price,img){
+    total+=price; document.getElementById("total").innerText=total;
+    const cart=document.getElementById("cartItems");
+    let item=document.createElement("div"); item.className="cart-item";
+    item.innerHTML=`<img src="${img}" alt="${name}" width="50" height="50">${name} - ?${price} 
+    <button class='remove-btn' onclick='removeItem(this,${price})'>Remove</button>`;
+    cart.appendChild(item);
+}
+
+function removeItem(btn,price){ total-=price; document.getElementById("total").innerText=total; btn.parentElement.remove(); }
+
+function placeOrder(e){
+    e.preventDefault();
+    const name=document.getElementById("name").value;
+    const phone=document.getElementById("phone").value;
+    const address=document.getElementById("address").value;
+    if(total===0){alert("Cart is empty!"); return;}
+    document.getElementById("orderMessage").innerHTML=`Order Placed! <br>
+    <strong>Name:</strong> ${name} <br>
+    <strong>Phone:</strong> ${phone} <br>
+    <strong>Address:</strong> ${address} <br>
+    <strong>Total:</strong> ?${total}`;
+    document.getElementById("cartItems").innerHTML=""; total=0; document.getElementById("total").innerText=total;
+    document.getElementById("deliveryForm").reset();
+}
+</script>
+
+</body>
+</html>
